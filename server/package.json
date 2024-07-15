@@ -1,0 +1,17 @@
+{
+  "dependencies": {
+    "@firebase/firestore": "^4.6.4",
+    "axios": "^1.7.2",
+    "bcrypt": "^5.1.1",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "firebase": "^10.12.3",
+    "jsonwebtoken": "^9.0.2",
+    "mysql": "^2.18.1",
+    "mysql2": "^3.10.2",
+    "node": "^18.20.4",
+    "nodemon": "^3.1.4"
+  }
+}

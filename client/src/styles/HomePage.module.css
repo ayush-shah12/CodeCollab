@@ -1,0 +1,30 @@
+/* Example styles for the App component */
+.main {
+    display: flex;
+    padding: 20px;
+    text-align: center; /* Center align all content within main_content */
+  }
+  
+  .welcome_section {
+    display: flex;
+    margin-bottom: 40px;
+  }
+  
+  .welcome_section h1 {
+    justify-content: center;
+    font-size: 2.5rem; /* Example: Adjust the font size as needed */
+    margin-bottom: 10px;
+    color:black;
+  }
+
+  
+  .image_section {
+    justify-self: center;
+    text-align: center; /* Center align content within image_section */
+  }
+  
+  .image_section img {
+    max-width: 100%;
+    height: auto;
+  }
+  
