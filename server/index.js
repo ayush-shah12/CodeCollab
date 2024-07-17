@@ -17,7 +17,7 @@ app.use(cookieParser());
 const connection = mysql.createConnection({
   host: '127.0.0.1',
   user: 'root',
-  password: 'Ayush@2005',
+  password: '',
   database: 'stored_users',
 });
 
