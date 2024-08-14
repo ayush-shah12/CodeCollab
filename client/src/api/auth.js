@@ -48,3 +48,17 @@ export async function logout() {
     )
     return response;
 }
+
+export async function getProblem(difficulty) {
+    try {
+        const response = await fetch("http://localhost:4000/problem", {
+            method: "POST",
+            body: JSON.stringify({ difficulty }),
+            headers: { "Content-Type": "application/json" }
+        })
+        return response;
+    }
+    catch (e) {
+        return;
+    }
+}

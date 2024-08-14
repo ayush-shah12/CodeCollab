@@ -1,0 +1,11 @@
+.image{
+    max-width: 10px;
+}
+
+.col{
+    width: 10px;
+}
+
+.container{
+    overflow-y:scroll ;
+}

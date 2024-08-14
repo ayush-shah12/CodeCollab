@@ -135,8 +135,9 @@ export default VideoChat;
 import React, { useEffect, useState, useRef } from 'react';
 import Header from "../Components/Header";
 import { Container, Row, Col, Image } from 'react-bootstrap';
-import "../styles/VideoChat.css";
+import "../styles/VideoChat.module.css";
 import { Peer } from "peerjs";
+import CollabCode from '../Components/CollabCode';
 
 const VideoChat = () => {
     const [yourMeetingID, setYourMeetingID] = useState("");
@@ -264,59 +265,38 @@ const VideoChat = () => {
 
     return (
         <div>
-            <Header />
-            <div>
-                <Container>
-                    <form>
-                        <label>
-                            YOUR Meeting ID
-                            <input type='text' value={yourMeetingID} onChange={handleChange} />
-                        </label>
-                        <label>
-                            Enter OTHER Meeting ID to call
-                            <input type='text' value={otherMeetingID} onChange={handleOtherChange} />
-                        </label>
-                        <input type="button" value="CALL" onClick={handleCall} />
-                        <input type="button" value="END" onClick={endCallFunction} />
-                    </form>
-                    <Row>
-                        <Col>
-                            {localStream && !endCall && (
-                                <video ref={(ref) => ref && (ref.srcObject = localStream)} autoPlay playsInline />
-                            )}
-                        </Col>
-                    </Row>
+    <Header />
+    <Container>
+        
+        <Row>
+            <Col xs={12} md={6} lg={5}>
+                <Row>
                     <Col>
-                        {remoteStreams && !endCall && (
-                            <video ref={(ref) => ref && (ref.srcObject = remoteStreams)} autoPlay playsInline />
+                        {localStream && !endCall ? (
+                            <video ref={(ref) => ref && (ref.srcObject = localStream)} autoPlay playsInline />
+                        ) : (
+                            <Image src="https://t4.ftcdn.net/jpg/02/29/75/83/360_F_229758328_7x8jwCwjtBMmC6rgFzLFhZoEpLobB6L8.jpg" />
                         )}
                     </Col>
-                    <Row>
-                        <Col>
-                            {!localStream && (
-                                <Image src="https://t4.ftcdn.net/jpg/02/29/75/83/360_F_229758328_7x8jwCwjtBMmC6rgFzLFhZoEpLobB6L8.jpg" />
-                            )}
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col>
-                            {!remoteStreams && (
-                                <Image src="https://t4.ftcdn.net/jpg/02/29/75/83/360_F_229758328_7x8jwCwjtBMmC6rgFzLFhZoEpLobB6L8.jpg" />
-                            )}
-                        </Col>
-                    </Row>
-                </Container>
-            </div>
-        </div>
+                </Row>
+                <Row>
+                    <Col>
+                        {remoteStreams && !endCall ? (
+                            <video ref={(ref) => ref && (ref.srcObject = remoteStreams)} autoPlay playsInline />
+                        ) : (
+                            <Image src="https://t4.ftcdn.net/jpg/02/29/75/83/360_F_229758328_7x8jwCwjtBMmC6rgFzLFhZoEpLobB6L8.jpg" />
+                        )}
+                    </Col>
+                </Row>
+            </Col>
+            <Col xs={12} md={6} lg={7}>
+                <CollabCode />
+            </Col>
+        </Row>
+    </Container>
+</div>
+
     );
 }
 
 export default VideoChat;
-
-
-/**
- * I call I end - Perfect
- * I call You end - FUCK DOESN'T WORK
- * You call I end - FUCK DOESN WORK
- * You call You end - 
- */
