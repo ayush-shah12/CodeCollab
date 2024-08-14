@@ -26,7 +26,7 @@ connection.connect((err) => {
     console.error('Error connecting to MySQL:', err);
     return;
   }
-  console.log('Connected to MySQL database!');
+  console.log('Connected to Users MySQL database!');
 });
 
 app.post("/register", async (req, res) => {
@@ -102,5 +102,40 @@ app.post("/logout", (req,res) => {
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+const leetcodeConnection = mysql.createConnection({
+  host: '127.0.0.1',
+  user: 'root',
+  password: 'Ayush@2005',
+  database: 'leetcode',
+});  
+
+leetcodeConnection.connect((err) => {
+  if (err) {
+    console.error('Error connecting to MySQL:', err);
+    return;
+  }
+  console.log('Connected to Leetcode MySQL database!');
+});
+
+app.post("/problem", async (req, res) => {
+  try {
+    
+    const {difficulty} = req.body;
+    const sql = 'SELECT * FROM leetcodeproblems WHERE difficulty = ? ORDER BY RAND() LIMIT 1';
+    leetcodeConnection.query(sql, [difficulty], (err, results) => {
+      if (err) {
+        console.error('Error fetching problems:', err.message);
+        return res.status(500).json({ error: 'Error fetching problems' });
+      }
+      res.status(200).json(results);
+    });
+  }
+  catch (e) {
+    console.error("error", e.message);
+    return res.status(500).json({ error: "Internal Error" });
+  }
+});
+
 
 
