@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useRef } from 'react';
 import Header from "../Components/Header";
 import { Container, Row, Col, Image } from 'react-bootstrap';
-import "../styles/VideoChat.module.css";
+import styles from "../styles/VideoChat.module.css";
 import { Peer } from "peerjs";
+
 import CollabCode from '../Components/CollabCode';
 
 const VideoChat = () => {
@@ -131,38 +132,37 @@ const VideoChat = () => {
 
     return (
         <div>
-    <Header />
-    <Container>
-        
-        <Row>
-            <Col xs={12} md={6} lg={5}>
-                <Row>
-                    <Col>
-                        {localStream && !endCall ? (
-                            <video ref={(ref) => ref && (ref.srcObject = localStream)} autoPlay playsInline />
-                        ) : (
-                            <Image src="https://t4.ftcdn.net/jpg/02/29/75/83/360_F_229758328_7x8jwCwjtBMmC6rgFzLFhZoEpLobB6L8.jpg" />
-                        )}
-                    </Col>
+          <Header />
+          <Container>
+            <Row>
+              <Col xs={10} md={3} lg={2} className={styles.column}>
+                <Row className="no-gutters">
+                  <Col className="p-0">
+                    {localStream ? (
+                      <video className={styles.image} ref={(ref) => ref && (ref.srcObject = localStream)} autoPlay playsInline />
+                    ) : (
+                      <Image className={styles.image} src="https://via.placeholder.com/320x240.png?text=Your+Video" rounded />
+                    )}
+                  </Col>
                 </Row>
-                <Row>
-                    <Col>
-                        {remoteStreams && !endCall ? (
-                            <video ref={(ref) => ref && (ref.srcObject = remoteStreams)} autoPlay playsInline />
-                        ) : (
-                            <Image src="https://t4.ftcdn.net/jpg/02/29/75/83/360_F_229758328_7x8jwCwjtBMmC6rgFzLFhZoEpLobB6L8.jpg" />
-                        )}
-                    </Col>
+                <Row className="no-gutters">
+                  <Col className="p-0">
+                    {remoteStreams ? (
+                      <video className={styles.image} ref={(ref) => ref && (ref.srcObject = remoteStreams)} autoPlay playsInline />
+                    ) : (
+                      <Image className={styles.image} src="https://via.placeholder.com/320x240.png?text=Their+Video" rounded />
+                    )}
+                  </Col>
                 </Row>
-            </Col>
-            <Col xs={12} md={6} lg={7}>
+              </Col>
+              <Col xs={12} md={8} lg={9}>
                 <CollabCode />
-            </Col>
-        </Row>
-    </Container>
-</div>
-
-    );
-}
+              </Col>
+            </Row>
+          </Container>
+        </div>
+      );
+    };
+    
 
 export default VideoChat;

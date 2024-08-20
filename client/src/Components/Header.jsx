@@ -32,7 +32,7 @@ const Header = () => {
   return (
     <Navbar bg="primary" data-bs-theme="dark" expand="lg" className="bg-body-tertiary">
       <Container>
-        <Navbar.Brand href="/">Omegle4Coders</Navbar.Brand>
+        <Navbar.Brand href="/">CodeCollab</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
