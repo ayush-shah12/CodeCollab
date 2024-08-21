@@ -15,8 +15,4 @@ Users can choose questions of varying difficulty and program in up to 5 differen
 ![App Screenshot](https://i.postimg.cc/VkQf2BJY/two-Sumimagejava.png)
 ![App Screenshot](https://i.postimg.cc/XvxnZRQJ/asd.png)
 
-## Authors
-
-- [@Ayush](https://www.github.com/ayush-shah12)
-- [@Kamil](https://www.github.com/KamilWoskowiak)
 
