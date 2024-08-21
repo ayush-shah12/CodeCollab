@@ -1,0 +1,16 @@
+# Server Configuration
+PORT=4000
+NODE_ENV=development 
+
+# JWT Configuration
+JWT_SECRET=ssajidsdsinods
+
+#CORS, Must Match Front End Port
+CORS_ORIGIN=http://localhost:5173
+
+# Database Configuration
+DB_PASSWORD = 
+
+# Compiler API Configuration
+CLIENT_ID = 
+CLIENT_SECRET = 

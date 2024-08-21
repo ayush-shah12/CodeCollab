@@ -14,7 +14,6 @@ export async function signUp(username, password, email) {
     }
 }
 
-
 //SignInSide.jsx - login
 export async function signIn(email, password) {
     try {
@@ -31,6 +30,7 @@ export async function signIn(email, password) {
     }
 }
 
+//verifyToken todo: implement to restrict access to certain pages
 export async function verifyToken() {
     const response = await fetch(`http://localhost:4000/verify`, {
         method: "GET",
@@ -47,18 +47,4 @@ export async function logout() {
     }
     )
     return response;
-}
-
-export async function getProblem(difficulty) {
-    try {
-        const response = await fetch("http://localhost:4000/problem", {
-            method: "POST",
-            body: JSON.stringify({ difficulty }),
-            headers: { "Content-Type": "application/json" }
-        })
-        return response;
-    }
-    catch (e) {
-        return;
-    }
 }

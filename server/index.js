@@ -8,6 +8,9 @@ const cookieParser = require("cookie-parser");
 const CORS_ORIGIN = process.env.CORS_ORIGIN;
 const PORT = process.env.PORT;
 const JWT_SECRET= process.env.JWT_SECRET;
+const DB_PASSWORD = process.env.DB_PASSWORD;
+const CLIENT_ID = process.env.CLIENT_ID;
+const CLIENT_SECRET = process.env.CLIENT_SECRET;
 
 const app = express();
 app.use(cors({ credentials: true, origin: CORS_ORIGIN }));
@@ -17,7 +20,7 @@ app.use(cookieParser());
 const connection = mysql.createConnection({
   host: '127.0.0.1',
   user: 'root',
-  password: 'Ayush@2005',
+  password: DB_PASSWORD,
   database: 'stored_users',
 });
 
@@ -103,19 +106,19 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-const leetcodeConnection = mysql.createConnection({
+const questionConnection = mysql.createConnection({
   host: '127.0.0.1',
   user: 'root',
-  password: 'Ayush@2005',
+  password: DB_PASSWORD,
   database: 'leetcode',
 });  
 
-leetcodeConnection.connect((err) => {
+questionConnection.connect((err) => {
   if (err) {
     console.error('Error connecting to MySQL:', err);
     return;
   }
-  console.log('Connected to Leetcode MySQL database!');
+  console.log('Connected to Questions MySQL database!');
 });
 
 app.post("/problem", async (req, res) => {
@@ -123,7 +126,7 @@ app.post("/problem", async (req, res) => {
     
     const {difficulty} = req.body;
     const sql = 'SELECT * FROM leetcodeproblems WHERE difficulty = ? ORDER BY RAND() LIMIT 1';
-    leetcodeConnection.query(sql, [difficulty], (err, results) => {
+    questionConnection.query(sql, [difficulty], (err, results) => {
       if (err) {
         console.error('Error fetching problems:', err.message);
         return res.status(500).json({ error: 'Error fetching problems' });
@@ -135,6 +138,34 @@ app.post("/problem", async (req, res) => {
     console.error("error", e.message);
     return res.status(500).json({ error: "Internal Error" });
   }
+});
+
+app.post("/compile", async (req, res) => {
+  
+  const code = req.body.code;
+  var lang = req.body.lang;
+
+  (lang === "JavaScript") ? lang = "nodejs" : lang = lang;
+
+  (lang === "C++") ? lang = "cpp" : lang = lang;
+
+  (lang === "C#") ? lang = "csharp" : lang = lang;
+
+
+  const output = await fetch('https://api.jdoodle.com/v1/execute', {
+    method: 'POST',
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      clientId: CLIENT_ID,
+      clientSecret: CLIENT_SECRET,
+      script: code,
+      language: lang,
+      versionIndex: "4"
+})});
+
+  outputData = await output.json();
+  //console.log("output:", outputData);
+  res.json(outputData);
 });
 
 
