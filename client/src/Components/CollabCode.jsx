@@ -74,7 +74,7 @@ const CollabCode = () => {
             const responseBody = await response.json();
             const title = responseBody[0].problem_title.replace(" ", "-");
             if (responseBody) {
-                const problem = await fetch('https://alfa-leetcode-api.onrender.com/select?titleSlug=' + responseBody[0].problem_title);
+                const problem = await fetch('https://alfa-leetcode-api.onrender.com/select?titleSlug=' + title);
                 const problemData = await problem.json();
                 setProblem(problemData);
                 const commentSyntax = commentDict[lang];

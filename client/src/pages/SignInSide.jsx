@@ -46,6 +46,7 @@ const SignInSide = () => {
   async function handleLogin() {
     try {
       const response = await signIn(email, password);
+      console.log(response);
 
       const responseBody = await response.json();
 
