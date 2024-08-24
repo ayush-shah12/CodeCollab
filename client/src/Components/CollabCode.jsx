@@ -17,6 +17,10 @@ import { compileCode } from '../api/action';
 import { useContext } from 'react';
 import { UserContext } from '../UserContext/UserContext';
 
+import { Container } from 'react-bootstrap';
+
+import Header from './Header';
+
 const CollabCode = () => {
 
     const { userInfo } = useContext(UserContext);
@@ -57,6 +61,7 @@ const CollabCode = () => {
 
     useEffect(() => {
         setCodeValue("");
+        setOutput("");
         const commentSyntax = commentDict[lang];
         setCodeValue(codeValue => codeValue + `${commentSyntax} Choose a Language From Above:\n${commentSyntax} Current Language Selected: ${lang} \n\n${startingCode[lang]}`);
     }, [lang]);
@@ -124,70 +129,75 @@ const CollabCode = () => {
 
     //compiles the code
     async function handleCodeCompile() {
-        setOutput("Compiling...");
+        const prev = output;
+        setOutput(prev + "\nCompiling...");
         const result = await compileCode(codeValue, lang);
-        const output = await result.json();
-        setOutput("\nCPU Time: " + output.cpuTime + " seconds; Memory: " + output.memory + " kilobyte(s)" + "\n\n" + output.output);
+        const outputResults = await result.json();
+        setOutput(prev + "\n\nCPU Time: " + outputResults.cpuTime + " seconds; Memory: " + outputResults.memory + " kilobyte(s)" + "\n\n" + outputResults.output + "\n\n");
     }
 
     return (
         <div>
-            <div className='menu-bar' style={{ height: '5vh', width: '78vw' }}>
-                <ButtonGroup aria-label="Basic example" className="d-flex justify-content-between">
-                    <Button className="rounded-0" variant="secondary" onClick={() => setLang("C++")}>C++</Button>
-                    <Button variant="secondary" onClick={() => setLang("python3")}>Python 3</Button>
-                    <Button variant="secondary" onClick={() => setLang("java")}>Java</Button>
-                    <Button variant="secondary" onClick={() => setLang("JavaScript")}>JavaScript</Button>
-                    <Button variant="secondary" onClick={() => setLang("C#")}>C#</Button>
-                    <Dropdown>
-                        <Dropdown.Toggle className="rounded-0" id="dropdown-basic">
-                            Choose Difficulty
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu>
-                            <Dropdown.Item onClick={() => setDifficulty("Easy")}>Easy</Dropdown.Item>
-                            <Dropdown.Item onClick={() => setDifficulty("Medium")}>Medium</Dropdown.Item>
-                            <Dropdown.Item onClick={() => setDifficulty("Hard")}>Hard</Dropdown.Item>
-                        </Dropdown.Menu>
-                    </Dropdown>
-                    <Button onClick={handleCodeCompile} className="rounded-0" variant="success">Run</Button>
-                </ButtonGroup>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                 {/* CodeMirror component for the code editor */}
-                <CodeMirror
-                    value={codeValue}
-                    height="88vh"
-                    width="39vw"
-                    extensions={langDict[lang]()}
-                    onChange={onChange}
-                    theme={copilot}
-                />
-                <div style={{ width: '39vw', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                    {/* CodeMirror component for the problem statement
-                    needs to be a CodeMirror component because the 
-                    problem statement is shared between the two users
-                    */}
-                    <CodeMirror
-                        style={{ cursor: 'default', userSelect: 'none' }}
-                        value={problemValue}
-                        height="44vh"
-                        readOnly={true}
-                        theme={consoleDark}
-                    />
-                    {/* TERMINAL */}
-                    <div style={{ height: '44vh', backgroundColor: '#000', color: '#fff', padding: '10px', overflowY: 'auto' }}>
-                    <CodeMirror
-                        style={{ cursor: 'default', userSelect: 'none' }}
-                        value={`C:\\Users\\CodeCollab\\${username}\\${problem?.questionTitle.replaceAll(' ', '-')}\\${lang}\n${output}`}
-                        height="44vh"
-                        theme={consoleDark}
-                        readOnly={true}
-                    />
+            <div style={{ height: "95vh", width:"85vw", "backgroundColor":"#282c34" }}>
+
+                <Container className='d-flex flex-column' style={{ "position": "absolute", width: "85vw", height: "100%" }}>
+                    <div className='d-flex menu-bar' style={{ height: '5vh', width: '85vw' }}>
+                        <ButtonGroup aria-label="Basic example" className="d-flex justify-content-between" style={{ width: '100%' }}>
+                            <Button className="rounded-0" variant="secondary" onClick={() => setLang("C++")}>C++</Button>
+                            <Button variant="secondary" onClick={() => setLang("python3")}>Python 3</Button>
+                            <Button variant="secondary" onClick={() => setLang("java")}>Java</Button>
+                            <Button variant="secondary" onClick={() => setLang("JavaScript")}>JavaScript</Button>
+                            <Button variant="secondary" onClick={() => setLang("C#")}>C#</Button>
+                            <Dropdown>
+                                <Dropdown.Toggle className="rounded-0" id="dropdown-basic" style={{ height: "100%" }}>
+                                    Choose Difficulty
+                                </Dropdown.Toggle>
+                                <Dropdown.Menu>
+                                    <Dropdown.Item onClick={() => setDifficulty("Easy")}>Easy</Dropdown.Item>
+                                    <Dropdown.Item onClick={() => setDifficulty("Medium")}>Medium</Dropdown.Item>
+                                    <Dropdown.Item onClick={() => setDifficulty("Hard")}>Hard</Dropdown.Item>
+                                </Dropdown.Menu>
+                            </Dropdown>
+                            <Button onClick={handleCodeCompile} className="rounded-0" variant="success">Run</Button>
+                        </ButtonGroup>
                     </div>
-                </div>
+                    <div className="d-flex flex-row" style={{ height: "100%", width: "100%", flex: 1 }}>
+
+                        <CodeMirror
+                            value={codeValue}
+                            height="90vh"
+                            width="45vw"
+                            extensions={langDict[lang]()}
+                            onChange={onChange}
+                            theme={copilot}
+                        />
+                        <div className="d-flex flex-column" style={{ height: "50%" }}>
+                            <CodeMirror
+                                style={{ cursor: 'default', userSelect: 'none' }}
+                                value={problemValue}
+                                height="55vh"
+                                width='40vw'
+                                readOnly={true}
+                                theme={consoleDark}
+                            />
+                            <CodeMirror
+                                style={{ cursor: 'default', userSelect: 'none' }}
+                                height="35vh"
+                                width='40vw'
+                                value={`C:\\Users\\CodeCollab\\${username}\\${problem?.questionTitle.replaceAll(' ', '-')}\\${lang}\n${output}`}
+                                theme={consoleDark}
+                                readOnly={true}
+                            />
+
+                        </div>
+
+                    </div>
+                </Container>
             </div>
         </div>
     );
 };
+
+
 
 export default CollabCode;

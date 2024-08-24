@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import Header from "../Components/Header";
-import { Container, Row, Col, Image } from 'react-bootstrap';
-import styles from "../styles/VideoChat.module.css";
+import { Container, Row, Col, Image, Button } from 'react-bootstrap';
 import { Peer } from "peerjs";
 
 import CollabCode from '../Components/CollabCode';
@@ -14,6 +13,8 @@ const VideoChat = () => {
     const [currentCall, setCurrentCall] = useState(null);
     const [endCall, setEndCall] = useState(false);
     const [dataConnection, setDataConnection] = useState(null);
+    const [cameraOn, setCameraOn] = useState(true);
+    const [micOn, setMicOn] = useState(true);
 
     const [reset, setReset] = useState(false);
 
@@ -129,40 +130,64 @@ const VideoChat = () => {
         }
     }, [endCall]);
 
+    function handleMic() {
+        setMicOn(!micOn);
+    }
+
+    function handleCamera() {
+        setCameraOn(!cameraOn);
+    }
+
 
     return (
         <div>
-          <Header />
-          <Container>
-            <Row>
-              <Col xs={10} md={3} lg={2} className={styles.column}>
-                <Row className="no-gutters">
-                  <Col className="p-0">
+            <Header />
+
+            <Container className='d-flex flex-column justify-content-around' style={{ "width": "15vw", "position": "absolute", "height": "95vh", "backgroundColor":"#282c34" }}>
+                <div className=" d-flex flex-column p-3 rounded">
                     {localStream ? (
-                      <video className={styles.image} ref={(ref) => ref && (ref.srcObject = localStream)} autoPlay playsInline />
-                    ) : (
-                      <Image className={styles.image} src="https://via.placeholder.com/320x240.png?text=Your+Video" rounded />
-                    )}
-                  </Col>
-                </Row>
-                <Row className="no-gutters">
-                  <Col className="p-0">
-                    {remoteStreams ? (
-                      <video className={styles.image} ref={(ref) => ref && (ref.srcObject = remoteStreams)} autoPlay playsInline />
-                    ) : (
-                      <Image className={styles.image} src="https://via.placeholder.com/320x240.png?text=Their+Video" rounded />
-                    )}
-                  </Col>
-                </Row>
-              </Col>
-              <Col xs={12} md={8} lg={9}>
+                        <video ref={(ref) => ref && (ref.srcObject = localStream)} autoPlay playsInline style={{ "flex": "1", "height": "20vh" }} />)
+                        :
+                        (<Image src="https://via.placeholder.com/320x240.png?text=Your+Video" rounded style={{ "flex": "1", "height": "20vh" }} />)}
+
+
+                    <div class="d-flex btn-group justify-content-around mt-2" role="group" aria-label="Basic example">
+
+                        <button type="button" class={micOn ? "btn btn-danger" : "btn btn-success"} onClick={handleMic}>
+                            <img src="https://img.icons8.com/ios/50/000000/microphone.png" style={{ "height": "20px" }}></img>
+                        </button>
+                        <button type="button" class={cameraOn ? "btn btn-danger" : "btn btn-success"} onClick={handleCamera}>
+                            <img src="https://img.icons8.com/ios/50/000000/video-call.png" style={{ "height": "20px" }}></img>
+                        </button>
+                    </div>
+
+                </div>
+                <div className='d-flex flex-column p-3 rounded '>
+                    {remoteStreams ? (<video ref={(ref) => ref && (ref.srcObject = localStream)} autoPlay playsInline style={{ "flex": "1", "height": "20vh" }} />)
+                        :
+                        (<Image src="https://via.placeholder.com/320x240.png?text=Their+Video" style={{ "flex": "1", "height": "20vh" }} rounded />)}
+
+                    <div class="d-flex btn-group justify-content-around mt-2" role="group" aria-label="Basic example">
+
+                        <button type="button" class="btn btn-danger">
+                            Disconnect
+                        </button>
+                        <button type="button" class="btn btn-danger">
+                            Next
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </Container>
+            <div style={{ marginLeft: "15vw" }}>
                 <CollabCode />
-              </Col>
-            </Row>
-          </Container>
+            </div>
+
         </div>
-      );
-    };
-    
+    )
+};
+
 
 export default VideoChat;

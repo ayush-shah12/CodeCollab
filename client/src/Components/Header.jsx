@@ -30,12 +30,12 @@ const Header = () => {
 }, [setUserInfo]);
 
   return (
-    <Navbar bg="primary" data-bs-theme="dark" expand="lg" className="bg-body-tertiary">
-      <Container>
+    <Navbar style={{"width":"100vw", "height":"5vh"}} bg="primary" data-bs-theme="dark" expand="lg" className="bg-body-tertiary" >
+      <Container style={{"maxWidth": "90vw"}}>
         <Navbar.Brand href="/">CodeCollab</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="me-auto">
+          <Nav className="w-100 justify-content-around">
             {!username && (
               <>
                 <Nav.Link className="mx-4" href="/SignIn">Sign In</Nav.Link>
@@ -60,7 +60,7 @@ const Header = () => {
             <Navbar.Brand className="ms-auto" href="/">Welcome {username}</Navbar.Brand>
           )}
         </Navbar.Collapse>
-      </Container>
+    </Container>
     </Navbar>
   );
 }
