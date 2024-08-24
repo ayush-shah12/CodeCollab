@@ -13,7 +13,6 @@ const router = createBrowserRouter([
   { path:"/signIn", element: <SignInSide/>},
   {path:"/signUp", element: <SignUpSide/>},
   {path:"/videoChat", element: <VideoChat/>},
-  {path:"/collabCode", element: <CollabCode/>}
 ])
 
 export default function RoutesProvider(){
