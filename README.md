@@ -8,14 +8,13 @@ Users can choose questions of varying difficulty and program in up to 5 differen
 
 ## Screenshots
 
-![App Screenshot](https://i.postimg.cc/VkQf2BJY/two-Sumimagejava.png)
-![App Screenshot](https://i.postimg.cc/XvxnZRQJ/asd.png)
+![App Screenshot](https://i.postimg.cc/FzNrQKCP/anotha.png)
+![App Screenshot](https://i.postimg.cc/T10R2XZT/c.png)
 
 
 ## Todo
 
 - Code editor and compiler for all languages, and problem fetching are fully functional.
 - Currently working on implementing the video feature and collaborative coding with a signaling server.
-- Redesigning the frontend for a better user experience.
-- Developing dynamic test case generation to allow users to test their solutions with a variety of inputs.
+- Developing dynamic test case generation scripts to allow users to test their solutions with a variety of inputs seamlessly
 
