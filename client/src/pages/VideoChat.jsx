@@ -1,143 +1,105 @@
 import React, { useEffect, useState, useRef } from 'react';
 import Header from "../Components/Header";
 import { Container, Row, Col, Image, Button } from 'react-bootstrap';
-import { Peer } from "peerjs";
+import Peer from 'peerjs';
 
 import CollabCode from '../Components/CollabCode';
 
 const VideoChat = () => {
-    const [yourMeetingID, setYourMeetingID] = useState("");
-    const [otherMeetingID, setOtherMeetingID] = useState("");
-    const [localStream, setLocalStream] = useState(null);
-    const [remoteStreams, setRemoteStreams] = useState(null);
-    const [currentCall, setCurrentCall] = useState(null);
-    const [endCall, setEndCall] = useState(false);
-    const [dataConnection, setDataConnection] = useState(null);
-    const [cameraOn, setCameraOn] = useState(true);
-    const [micOn, setMicOn] = useState(true);
+    const [peerId, setPeerId] = useState('');
+    const [remotePeerId, setRemotePeerId] = useState('');
+    const [customRoomId, setCustomRoomId] = useState('');
+    const [roomId, setRoomId] = useState('');
+    const [myStream, setMyStream] = useState(null);
+    const [remoteStream, setRemoteStream] = useState(null);
+    const myVideoRef = useRef();
+    const remoteVideoRef = useRef();
+    const [isMuted, setIsMuted] = useState(false);
+    const [isCameraOn, setIsCameraOn] = useState(true);
 
-    const [reset, setReset] = useState(false);
-
-    const peerRef = useRef();
+    const peer = useRef(null);
 
     useEffect(() => {
-        const peer = new Peer();
-
-        //auto generating meetingID for current user
-        peer.on('open', (id) => {
-            setYourMeetingID(id);
+        peer.current = new Peer({
+            host: 'localhost',
+            port: 4000,
+            path: '/peerjs/myapp',
+            secure: false,
         });
 
-        //auto accepts calls, basically an event listner 
-        peer.on('call', (call) => {
-            navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-                .then(stream => {
-                    call.answer(stream);
-                    setLocalStream(stream);
-                    call.on("stream", (remoteStream) => {
-                        setRemoteStreams(remoteStream)
-                    })
-                    setCurrentCall(call);
-                })
-
-                .catch(err => console.error('Error getting user media:', err));
+        peer.current.on('open', id => {
+            setPeerId(id);
         });
 
-        peer.on('connection', (conn) => {
-            conn.on('data', (data) => {
-                if (data === 'call ended') {
-                    handleRemoteEndCall();
-                }
+        peer.current.on('call', call => {
+            navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => {
+                setMyStream(stream);
+                myVideoRef.current.srcObject = stream;
+                call.answer(stream);
+                call.on('stream', remoteStream => {
+                    setRemoteStream(remoteStream);
+                    remoteVideoRef.current.srcObject = remoteStream;
+                });
             });
-            setDataConnection(conn);
         });
-
-        peerRef.current = peer;
 
         return () => {
-            peer.destroy();
+            peer.current.destroy();
         };
-    }, [reset]);
+    }, []);
 
-    //allows for outgoing calls
-    function handleCall() {
-        navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-            .then(stream => {
-                setLocalStream(stream);
-                const call = peerRef.current.call(otherMeetingID, stream);
-                setCurrentCall(call);
-                call.on('stream', (remoteStream) => {
-                    setRemoteStreams(remoteStream);
+    const createRoom = async () => {
+        if (customRoomId.trim()) {
+            try {
+                const response = await fetch('http://localhost:4000/create-room', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ roomId: customRoomId.trim() }),
                 });
 
-                const conn = peerRef.current.connect(otherMeetingID);
-                conn.on('open', () => {
-                    setDataConnection(conn);
+                if (response.ok) {
+                    const data = await response.json();
+                    setRoomId(data.roomId);
+                } else {
+                    console.error('Failed to create room:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Error creating room:', error);
+            }
+        } else {
+            alert('Please enter a valid room ID');
+        }
+    };
+
+    const joinRoom = () => {
+        if (remotePeerId) {
+            navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => {
+                setMyStream(stream);
+                myVideoRef.current.srcObject = stream;
+                const call = peer.current.call(remotePeerId, stream);
+                call.on('stream', remoteStream => {
+                    setRemoteStream(remoteStream);
+                    remoteVideoRef.current.srcObject = remoteStream;
                 });
-
-            })
-            .catch(err => console.error('Error getting user media:', err));
-    }
-
-    function handleChange(event) {
-        setYourMeetingID(event.target.value);
-    }
-
-    function handleOtherChange(event) {
-        setOtherMeetingID(event.target.value);
-    }
-
-    function endCallFunction() {
-        if (currentCall) {
-            currentCall.close();
-            handleLocalEndCall();
+            });
         }
-        if (dataConnection) {
-            dataConnection.send("call ended");
+    };
+
+    const toggleMute = () => {
+        if (myStream) {
+            myStream.getAudioTracks()[0].enabled = !myStream.getAudioTracks()[0].enabled;
+            setIsMuted(!isMuted);
         }
-    }
+    };
 
-    function handleLocalEndCall() {
-        if (localStream) {
-            localStream.getTracks().forEach(track => track.stop());
-            setLocalStream(null);
+    const toggleCamera = () => {
+        if (myStream) {
+            myStream.getVideoTracks()[0].enabled = !myStream.getVideoTracks()[0].enabled;
+            setIsCameraOn(!isCameraOn);
         }
-        if (remoteStreams) {
-            remoteStreams.getTracks().forEach(track => track.stop());
-            setRemoteStreams(null);
-        }
-        setCurrentCall(null);
-    }
-
-    function handleRemoteEndCall() {
-        setEndCall(true);
-        handleLocalEndCall();
-    }
-
-    function resetCallState() {
-        if (peerRef.current) {
-            peerRef.current.destroy();
-        }
-        setYourMeetingID("");
-        setOtherMeetingID("");
-        setEndCall(false);
-        setDataConnection(null);
-    }
-
-    useEffect(() => {
-        if (endCall) {
-            resetCallState();
-        }
-    }, [endCall]);
-
-    function handleMic() {
-        setMicOn(!micOn);
-    }
-
-    function handleCamera() {
-        setCameraOn(!cameraOn);
-    }
-
+    };
 
     return (
         <div>
@@ -145,40 +107,54 @@ const VideoChat = () => {
 
             <Container className='d-flex flex-column justify-content-around' style={{ "width": "15vw", "position": "absolute", "height": "95vh", "backgroundColor":"#282c34" }}>
                 <div className=" d-flex flex-column p-3 rounded">
-                    {localStream ? (
-                        <video ref={(ref) => ref && (ref.srcObject = localStream)} autoPlay playsInline style={{ "flex": "1", "height": "20vh" }} />)
-                        :
-                        (<Image src="https://via.placeholder.com/320x240.png?text=Your+Video" rounded style={{ "flex": "1", "height": "20vh" }} />)}
+                    <video ref={myVideoRef} autoPlay muted style={{backgroundColor: 'black', "flex": "1", "height": "20vh" }} />
 
 
-                    <div class="d-flex btn-group justify-content-around mt-2" role="group" aria-label="Basic example">
+                    <div className ="d-flex btn-group justify-content-around mt-2" role="group" aria-label="Basic example">
 
-                        <button type="button" class={micOn ? "btn btn-danger" : "btn btn-success"} onClick={handleMic}>
+                        <button type="button" className ={isMuted ? "btn btn-danger" : "btn btn-success"} onClick={toggleMute}>
                             <img src="https://img.icons8.com/ios/50/000000/microphone.png" style={{ "height": "20px" }}></img>
                         </button>
-                        <button type="button" class={cameraOn ? "btn btn-danger" : "btn btn-success"} onClick={handleCamera}>
+                        <button type="button" className ={isCameraOn ? "btn btn-danger" : "btn btn-success"} onClick={toggleCamera}>
                             <img src="https://img.icons8.com/ios/50/000000/video-call.png" style={{ "height": "20px" }}></img>
                         </button>
                     </div>
 
                 </div>
                 <div className='d-flex flex-column p-3 rounded '>
-                    {remoteStreams ? (<video ref={(ref) => ref && (ref.srcObject = localStream)} autoPlay playsInline style={{ "flex": "1", "height": "20vh" }} />)
-                        :
-                        (<Image src="https://via.placeholder.com/320x240.png?text=Their+Video" style={{ "flex": "1", "height": "20vh" }} rounded />)}
+                    <video ref={remoteVideoRef} autoPlay style={{backgroundColor: 'black', "flex": "1", "height": "20vh" }} />
 
-                    <div class="d-flex btn-group justify-content-around mt-2" role="group" aria-label="Basic example">
+                    <div className ="d-flex btn-group justify-content-around mt-2" role="group" aria-label="Basic example">
 
-                        <button type="button" class="btn btn-danger">
+                        <button type="button" className ="btn btn-danger">
                             Disconnect
                         </button>
-                        <button type="button" class="btn btn-danger">
+                        <button type="button" className ="btn btn-danger">
                             Next
                         </button>
-
                     </div>
 
                 </div>
+            <div>
+                <h2>Your ID: {peerId}</h2>
+                <input
+                    type="text"
+                    value={customRoomId}
+                    onChange={(e) => setCustomRoomId(e.target.value)}
+                    placeholder="Enter custom room ID"
+                />
+                <button onClick={createRoom}>Create Room</button>
+                {roomId && <p>Room ID: {roomId} (Share this ID with others to join)</p>}
+            </div>
+            <div>
+                <input
+                    type="text"
+                    value={remotePeerId}
+                    onChange={(e) => setRemotePeerId(e.target.value)}
+                    placeholder="Enter Room ID to join"
+                />
+                <button onClick={joinRoom}>Join Room</button>
+            </div>
 
             </Container>
             <div style={{ marginLeft: "15vw" }}>

@@ -149,6 +149,24 @@ app.post("/logout", (req, res) => {
   res.cookie("token", "").json("ok");
 })
 
+const { ExpressPeerServer } = require('peer');
+const peerServer = ExpressPeerServer(app, {
+  debug: true,
+  path: '/myapp',
+});
+
+app.use('/peerjs', peerServer);
+
+app.post('/create-room', (req, res) => {
+  const { roomId } = req.body;
+
+  if (roomId && typeof roomId === 'string' && roomId.trim().length > 0) {
+      res.json({ roomId: roomId.trim() });
+  } else {
+      res.status(400).json({ error: 'Invalid room ID' });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
