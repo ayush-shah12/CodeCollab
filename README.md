@@ -7,7 +7,7 @@ Users can choose questions of varying difficulty and program in up to 5 differen
 
 
 ## Screenshots
-
+![App Screenshot](https://i.postimg.cc/PqfZVKhc/initial.png)
 ![App Screenshot](https://i.postimg.cc/FzNrQKCP/anotha.png)
 ![App Screenshot](https://i.postimg.cc/T10R2XZT/c.png)
 
