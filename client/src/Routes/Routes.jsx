@@ -5,6 +5,7 @@ import SignUpSide from "../pages/SignUpSide";
 import HomePage from "../pages/HomePage";
 import VideoChat from "../pages/VideoChat";
 import CollabCode from "../Components/CollabCode";
+import TestCollab from "../pages/TestCollab";
 
 
 //routing
@@ -13,6 +14,7 @@ const router = createBrowserRouter([
   { path:"/signIn", element: <SignInSide/>},
   {path:"/signUp", element: <SignUpSide/>},
   {path:"/videoChat", element: <VideoChat/>},
+  {path:"/test", element: <TestCollab/>}    //*******************TESTING FILE FOR COLLABORATIVE CODING(IGNORE)*******************
 ])
 
 export default function RoutesProvider(){

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import CodeMirror from '@uiw/react-codemirror';
 import { langs } from '@uiw/codemirror-extensions-langs';
 import { copilot } from '@uiw/codemirror-theme-copilot';
@@ -19,9 +19,18 @@ import { UserContext } from '../UserContext/UserContext';
 
 import { Container } from 'react-bootstrap';
 
-import Header from './Header';
+
+
+import * as Y from 'yjs'
+import { yCollab } from 'y-codemirror.next'
+import { WebrtcProvider } from 'y-webrtc'
+
+
+
 
 const CollabCode = () => {
+
+    const editorRef = useRef(null);
 
     const { userInfo } = useContext(UserContext);
 
@@ -69,6 +78,8 @@ const CollabCode = () => {
     //contains the code that the user writes
     const onChange = useCallback((val, viewUpdate) => {
         setCodeValue(val);
+        editorRef.current.view = viewUpdate;
+        console.log(editorRef.current);
     }, []);
 
 
@@ -136,9 +147,30 @@ const CollabCode = () => {
         setOutput(prev + "\n\nCPU Time: " + outputResults.cpuTime + " seconds; Memory: " + outputResults.memory + " kilobyte(s)" + "\n\n" + outputResults.output + "\n\n");
     }
 
+    // useEffect(() => {
+    //     if (editorRef.current) {
+    //         const ydoc = new Y.Doc();
+    //         const provider = new WebrtcProvider('CodeCollab', ydoc);
+    //         const yText = ydoc.getText('codemirror');
+    //         const yUndoManager = new Y.UndoManager(yText);
+    
+    //         const editorView = editorRef.current;
+    //         if (editorView) {
+    //             yCollab(editorView.view, yText, provider.awareness);
+    //         }
+    
+    //         return () => {
+    //             provider.disconnect();
+    //             ydoc.destroy();
+    //         };
+    //     }
+    // }, [editorRef.current]);
+    
+    
+
     return (
         <div>
-            <div style={{ height: "95vh", width:"85vw", "backgroundColor":"#282c34" }}>
+            <div style={{ height: "95vh", width: "85vw", "backgroundColor": "#282c34" }}>
 
                 <Container className='d-flex flex-column' style={{ "position": "absolute", width: "85vw", height: "100%" }}>
                     <div className='d-flex menu-bar' style={{ height: '5vh', width: '85vw' }}>
@@ -162,8 +194,8 @@ const CollabCode = () => {
                         </ButtonGroup>
                     </div>
                     <div className="d-flex flex-row" style={{ height: "100%", width: "100%", flex: 1 }}>
-
                         <CodeMirror
+                            ref={editorRef}
                             value={codeValue}
                             height="90vh"
                             width="45vw"
