@@ -5,14 +5,19 @@ In the current CS job market, technical questions are essential. Our platform of
 
 Users can choose questions of varying difficulty and program in up to 5 different languages (with more options coming soon!). They can write and execute their code directly on our site and view the results for passed and failed test cases.
 
+# Current Functionality
+- Real-Time Collaborative Coding: Users can create or join unique rooms to code together in real time, enhancing teamwork and collective problem-solving.
+- Code Compilation in Multiple Languages: The platform supports code execution in five different languages, allowing users to compile and run code directly within an integrated terminal.
+- Leetcode-Inspired Problem Selection: Users can explore a variety of coding challenges at all difficulty levels, sourced from Leetcode. Each problem includes a detailed statement, time complexity considerations, and example test cases for effective practice.
+- Video Feature (In Development): Video functionality is partially implemented but requires further debugging, especially around connection stability.
 
 ## Screenshots
 ![App Screenshot](https://i.postimg.cc/PqfZVKhc/initial.png)
 ![App Screenshot](https://i.postimg.cc/FzNrQKCP/anotha.png)
 ![App Screenshot](https://i.postimg.cc/T10R2XZT/c.png)
 
-
 ## To Add In Future
-- Collaborative Coding is done, Need to Add Video 
-- Developing dynamic test case generation scripts to allow users to test their solutions with a variety of inputs seamlessly
-
+- Peer-to-Peer Video Fixes: Address existing bugs related to peer-to-peer video functionality to improve reliability and user experience.
+- Server Deployment with Yjs: Plan for the deployment of servers using Yjs, facilitating collaborative editing beyond local environments and deploy a database of many more Leetcode Problems
+- Random Room Matching Algorithm: Implement a random room matching system, allowing users to connect with others without needing to specify room IDs, enhancing the spontaneity of collaboration.
+- Dynamic Test Case Generation: Develop scripts for generating dynamic test cases, enabling users to seamlessly test their solutions with a diverse range of inputs. This will address the lack of an official LeetCode API by creating a custom solution.
