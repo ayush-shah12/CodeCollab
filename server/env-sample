@@ -1,18 +1,18 @@
 # Server Configuration
-PORT=4000
+PORT=
 NODE_ENV=development 
 
 # JWT Configuration
-JWT_SECRET=ssajidsdsinods
+JWT_SECRET=
 
 #CORS, Must Match Front End Port
-CORS_ORIGIN=http://localhost:5173
+CORS_ORIGIN=
 
 # Compiler API Configuration
 CLIENT_ID = 
 CLIENT_SECRET = 
 
-#POSTGRESQL Database Configuration (Heroku)
+#POSTGRESQL Database Configuration 
 DATABASE_URL=
 
 
