@@ -12,9 +12,7 @@ Users can choose questions of varying difficulty and program in up to 5 differen
 ![App Screenshot](https://i.postimg.cc/T10R2XZT/c.png)
 
 
-## Todo
-
-- Code editor and compiler for all languages, and problem fetching are fully functional.
-- Currently working on implementing the video feature and collaborative coding with a signaling server.
+## To Add In Future
+- Collaborative Coding is done, Need to Add Video 
 - Developing dynamic test case generation scripts to allow users to test their solutions with a variety of inputs seamlessly
 
