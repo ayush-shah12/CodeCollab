@@ -26,7 +26,7 @@ const client = new Client({
 
 client.connect()
   .then(() => console.log('Connected to PostgreSQL - Heroku'))
-  .catch(err => console.error('Connection error', err.stack));
+  .catch(err => console.error('Connection error(Problems Database)', err.stack));
 
 
 app.post("/problem", async (req, res) => {

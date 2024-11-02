@@ -1,18 +1,6 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { useContext } from 'react';
-
+import React, { useEffect, useState, useContext, useRef } from 'react';
 import { UserContext } from '../UserContext/UserContext';
-
-import CodeMirror, { highlightActiveLine, lineNumbers, placeholder } from '@uiw/react-codemirror';
-import { langs } from '@uiw/codemirror-extensions-langs';
-import { copilot } from '@uiw/codemirror-theme-copilot';
-import { abcdef } from '@uiw/codemirror-theme-abcdef';
-import { vscodeDark } from '@uiw/codemirror-theme-vscode';
-import { xcodeDark } from '@uiw/codemirror-theme-xcode';
-import { consoleDark } from '@uiw/codemirror-theme-console'
-import { EditorState } from '@uiw/react-codemirror';
-import { EditorView } from '@uiw/react-codemirror';
-import { basicSetup, minimalSetup } from '@uiw/codemirror-extensions-basic-setup';
+import CodeMirror, { highlightActiveLine, lineNumbers } from '@uiw/react-codemirror';
 
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
@@ -22,19 +10,23 @@ import { Container } from 'react-bootstrap';
 import { getProblem } from '../api/action';
 import { compileCode } from '../api/action';
 
+import { langs } from '@uiw/codemirror-extensions-langs';
+import { copilot } from '@uiw/codemirror-theme-copilot';
+import { consoleDark } from '@uiw/codemirror-theme-console'
+import { EditorState } from '@uiw/react-codemirror';
+import { EditorView } from '@uiw/react-codemirror';
+import { basicSetup, minimalSetup } from '@uiw/codemirror-extensions-basic-setup';
+import { keymap } from "@codemirror/view";
+import { indentLess, indentMore } from "@codemirror/commands";
+import { insertTab } from '@codemirror/commands';
+
 import * as Y from 'yjs'
 import { yCollab } from 'y-codemirror.next'
 import { WebrtcProvider } from 'y-webrtc'
 
 import * as random from 'lib0/random';
 
-import { keymap } from "@codemirror/view";
-import { indentLess, indentMore } from "@codemirror/commands";
-
-import { insertTab } from '@codemirror/commands';
-
 const CollabCode = () => {
-
 
     const { userInfo } = useContext(UserContext);
     const username = userInfo?.username;
@@ -45,6 +37,45 @@ const CollabCode = () => {
     const [difficulty, setDifficulty] = useState('Easy');
     const [problem, setProblem] = useState(null);
     const [output, setOutput] = useState("");
+
+    const [roomID, setRoomID] = useState({username} + random.uint32().toString(16));
+
+    const initializeProvider = (room) => {
+        if (providerRef.current) {
+            providerRef.current.destroy();
+        }
+        providerRef.current = new WebrtcProvider(room, ydoc);
+        providerRef.current.awareness.setLocalStateField('user', {
+            name: username,
+            color: '#30bced',
+            colorLight: '#30bced33',
+        });
+    };
+
+    useEffect(() => {
+        initializeProvider(roomID);
+        return () => providerRef.current && providerRef.current.destroy();
+    }, [roomID]);
+
+    useEffect(() => {
+        if (editorView.current) editorView.current.destroy();
+        const state = EditorState.create({
+            doc: ytext.toString(),
+            extensions: [
+                basicSetup({ defaultKeymap: true, allowMultipleSelections: true, tabSize: 4 }),
+                keymap.of([{ key: "Tab", run: insertTab }, { key: "Shift-Tab", run: indentLess }]),
+                langDict[lang](),
+                yCollab(ytext, providerRef.current?.awareness, { undoManager }),
+                copilot,
+                lineNumbers(),
+                highlightActiveLine(),
+                EditorView.lineWrapping,
+                EditorView.theme({ "&": { height: "100%" }, ".cm-scroller": { overflow: "auto" } }),
+            ],
+        });
+        editorView.current = new EditorView({ state, parent: editorRef.current });
+        setCodeValue(editorView.current.state.doc.toString());
+    }, [lang]);
 
     const langDict = {
         "C++": langs.cpp,
@@ -77,7 +108,7 @@ const CollabCode = () => {
         const commentSyntax = commentDict[lang];
     }, [lang]);
 
-    //fetches the problem from the database, when difficulty is changed (initial = "Easy")
+    //fetches a random problem based on difficulty from my hosted database, then fetches the problem metadata from an api 
     useEffect(() => {
         async function fetchData() {
             const response = await getProblem(difficulty);
@@ -143,46 +174,43 @@ const CollabCode = () => {
         setOutput(prev + "\n\nCPU Time: " + outputResults.cpuTime + " seconds; Memory: " + outputResults.memory + " kilobyte(s)" + "\n\n" + outputResults.output + "\n\n");
     }
 
-    const editorRef = useRef(null); 
-    const editorView = useRef(null);
+    // const editorRef = useRef(null);
+    // const editorView = useRef(null);
 
-    // Initialize Yjs and WebRTC provider
-    const ydoc = new Y.Doc();
-    const provider = new WebrtcProvider('demo', ydoc);
-    const ytext = ydoc.getText('codemirror');
-    const undoManager = new Y.UndoManager(ytext);
+    // // Initialize Yjs and WebRTC provider
+    // const ydoc = new Y.Doc();
+    // const provider = new WebrtcProvider(roomID, ydoc);
+    // const ytext = ydoc.getText('codemirror');
+    // const undoManager = new Y.UndoManager(ytext);
 
+    // useEffect(() => {
 
-    //runs once ONLY
-    useEffect(() => {
+    //     const usercolors = [
+    //         { color: '#30bced', light: '#30bced33' },
+    //         { color: '#6eeb83', light: '#6eeb8333' },
+    //         { color: '#ffbc42', light: '#ffbc4233' },
+    //         { color: '#ecd444', light: '#ecd44433' },
+    //         { color: '#ee6352', light: '#ee635233' },
+    //         { color: '#9ac2c9', light: '#9ac2c933' },
+    //         { color: '#8acb88', light: '#8acb8833' },
+    //         { color: '#1be7ff', light: '#1be7ff33' },
+    //     ];
 
-        const usercolors = [
-            { color: '#30bced', light: '#30bced33' },
-            { color: '#6eeb83', light: '#6eeb8333' },
-            { color: '#ffbc42', light: '#ffbc4233' },
-            { color: '#ecd444', light: '#ecd44433' },
-            { color: '#ee6352', light: '#ee635233' },
-            { color: '#9ac2c9', light: '#9ac2c933' },
-            { color: '#8acb88', light: '#8acb8833' },
-            { color: '#1be7ff', light: '#1be7ff33' },
-        ];
+    //     // Select a random color for this user
+    //     const userColor = usercolors[random.uint32() % usercolors.length];
 
-        // Select a random color for this user
-        const userColor = usercolors[random.uint32() % usercolors.length];
+    //     // Set user awareness
+    //     provider.awareness.setLocalStateField('user', {
+    //         name: username,
+    //         color: userColor.color,
+    //         colorLight: userColor.light,
+    //     });
+    // }, []);
 
-        // Set user awareness
-        provider.awareness.setLocalStateField('user', {
-            name: username,
-            color: userColor.color,
-            colorLight: userColor.light,
-        });
-    }, []);
-
-    //runs every time lang is changed
+    //handle programming language change
     useEffect(() => {
 
         if (editorView.current) { editorView.current.destroy(); }
-
 
         const state = EditorState.create({
             doc: ytext.toString(),
@@ -217,6 +245,7 @@ const CollabCode = () => {
             parent: editorRef.current,
         });
 
+        // setting initial starting code
         const setInitialCode = () => {
             const commentSyntax = commentDict[lang];
             const transaction = editorView.current.state.update({
@@ -235,11 +264,14 @@ const CollabCode = () => {
 
     }, [lang]);
 
+
+ 
+
     return (
         <div>
             <div style={{ height: "95vh", width: "85vw", "backgroundColor": "#282c34" }}>
 
-                <Container className='d-flex flex-column' style={{ "position": "absolute", width: "85vw", height: "100%" }}>
+                <Container className='d-flex flex-column' style={{ "position": "relative", width: "85vw", height: "100%" }}>
                     <div className='d-flex menu-bar' style={{ height: '5vh', width: '85vw' }}>
                         <ButtonGroup aria-label="Basic example" className="d-flex justify-content-between" style={{ width: '100%' }}>
                             <Button className="rounded-0" variant="secondary" onClick={() => setLang("C++")}>C++</Button>
@@ -262,19 +294,9 @@ const CollabCode = () => {
                     </div>
                     <div className="d-flex flex-row" style={{ height: "100%", width: "100%", flex: 1 }}>
                         <div ref={editorRef} style={{ height: "90vh", width: "45vw", backgroundColor: "#1e1e1e" }} />
-
-                        {/* <CodeMirror
-                          
-                            value={codeValue}
-                            height="90vh"
-                            width="45vw"
-                            extensions={langDict[lang]()}
-                            onChange={onChange}
-                            theme={copilot}
-                        /> */}
-                        <div className="d-flex flex-column" style={{ height: "50%" }}>
+                        <div className="d-flex flex-column" style={{ position: "relative", height: "50%", width: "31vw" }}>
                             <CodeMirror
-                                style={{ cursor: 'default', userSelect: 'none' }}
+                                style={{ cursor: 'pointer', userSelect: 'none', highlightActiveLine: false, lineHighlight: false }}
                                 value={problemValue}
                                 height="55vh"
                                 width='40vw'
@@ -282,16 +304,14 @@ const CollabCode = () => {
                                 theme={consoleDark}
                             />
                             <CodeMirror
-                                style={{ cursor: 'default', userSelect: 'none' }}
+                                style={{ cursor: 'pointer', userSelect: 'none', highlightActiveLine: false, lineHighlight: false }}
                                 height="35vh"
                                 width='40vw'
                                 value={`C:\\Users\\CodeCollab\\${username}\\${problem?.questionTitle.replaceAll(' ', '-')}\\${lang}\n${output}`}
                                 theme={consoleDark}
                                 readOnly={true}
                             />
-
                         </div>
-
                     </div>
                 </Container>
             </div>
