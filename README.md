@@ -5,7 +5,7 @@ In the current CS job market, technical questions are essential. Our platform of
 
 Users can choose questions of varying difficulty and program in up to 5 different languages (with more options coming soon!). They can write and execute their code directly on our site and view the results for passed and failed test cases.
 
-# Current Functionality
+## Current Functionality
 - Real-Time Collaborative Coding: Users can create or join unique rooms to code together in real time, enhancing teamwork and collective problem-solving.
 - Code Compilation in Multiple Languages: The platform supports code execution in five different languages, allowing users to compile and run code directly within an integrated terminal.
 - Leetcode-Inspired Problem Selection: Users can explore a variety of coding challenges at all difficulty levels, sourced from Leetcode. Each problem includes a detailed statement, time complexity considerations, and example test cases for effective practice.
