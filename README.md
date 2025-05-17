@@ -12,9 +12,10 @@ Users can choose questions of varying difficulty and program in up to 5 differen
 - Video Feature (In Development): Video functionality is partially implemented but requires further debugging, especially around connection stability.
 
 ## Screenshots
-![App Screenshot](https://i.postimg.cc/PqfZVKhc/initial.png)
-![App Screenshot](https://i.postimg.cc/FzNrQKCP/anotha.png)
-![App Screenshot](https://i.postimg.cc/T10R2XZT/c.png)
+![image](https://github.com/user-attachments/assets/e9b360cb-c358-4611-b8b6-a1083e9c1d4c)
+![image](https://github.com/user-attachments/assets/d40f81ff-7537-4e69-91ec-991d8ef620b9)
+![image](https://github.com/user-attachments/assets/f950f93b-9b00-4a28-bc14-42e8cf256ca4)
+
 
 ## To Add In Future
 - Peer-to-Peer Video Fixes: Address existing bugs related to peer-to-peer video functionality to improve reliability and user experience.
